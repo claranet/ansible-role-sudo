@@ -1,0 +1,2 @@
+
+{{ item.user }} ALL=({{ item.as | default('root') }}) NOPASSWD: {{ item.command }}

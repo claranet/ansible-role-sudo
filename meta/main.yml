@@ -1,0 +1,28 @@
+galaxy_info:
+  role_name: "sudo"
+  namespace: "claranet"
+  description: "Install and Configure sudo"
+  author: "Claranet"
+  company: "Claranet France"
+
+  license: "MPL2"
+
+  min_ansible_version: "2.10"
+
+  galaxy_tags: ['claranet', 'sudo']
+
+  platforms:
+    - name: EL
+      versions:
+        - all
+    - name: Amazon
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all
+
+dependencies: []

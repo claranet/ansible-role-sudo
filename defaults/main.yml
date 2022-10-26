@@ -1,0 +1,5 @@
+---
+# defaults file for role
+
+# dirs for sudoers configuration files
+sudoers_dir: /etc/sudoers.d/
