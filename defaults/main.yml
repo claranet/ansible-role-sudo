@@ -2,4 +2,19 @@
 # defaults file for role
 
 # dirs for sudoers configuration files
-sudoers_dir: /etc/sudoers.d/
+sudo_sudoers_dir: /etc/sudoers.d/
+
+# install sudo package
+sudo_install_package: true
+
+# sudo rights to set
+sudo_rights:
+  foo:
+    - name: "foo"
+      no_passwd: false
+      from_hosts: ALL
+      as_user: ALL
+      as_group: ALL
+      commands:
+        - "tail -f /dev/null"
+      state: present
