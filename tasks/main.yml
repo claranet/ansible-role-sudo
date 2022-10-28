@@ -17,15 +17,17 @@
   loop_control:
     loop_var: loop_vars
 
-- name: Make a sudo file
-  vars:
-    sudoers_merged: "{{ sudoers | default([]) + sudoers_all | default([]) }}"
+- name: Debug
+  ansible.builtin.debug:
+    msg: "{{ lookup('ansible.builtin.template', 'sudoers.j2') }}"
+  loop: "{{ sudo_rights | dict2items }}"
+
+- name: Attempting to overlay sudoers.d configurations, if applicable
   ansible.builtin.template:
-    src: 'sudoers.j2'
-    dest: "{{ sudoers_dir }}/{{ '20_' + item.user + '_' + item.name }}"
+    src: sudoers.j2
+    dest: "{{ sudo_sudoers_dir }}/{{ item.key }}"
     owner: root
     group: root
     mode: 0440
-    validate: "visudo -cf %s"  # {{ sudoers_dir }}/{{ '20' + item.user + '_' + item.name }}"
-  loop: "{{ sudoers_merged }}"
-  when: (sudoers is defined) or (sudoers_all is defined)
+    validate: 'visudo -cf %s'
+  loop: "{{ sudo_rights | dict2items }}"
