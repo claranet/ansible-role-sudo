@@ -3,53 +3,51 @@
   hosts: all
 
   pre_tasks:
-    # - name: create test users
-    #   ansible.builtin.user:
-    #     state: present
-    #     name: firstusersudo
-    #     password: first
-    #     comment: "first user for test sudo role"
-    #     create_home: true
-    #     shell: /bin/bash
+    - name: create test users
+      ansible.builtin.user:
+        state: present
+        name: firstusersudo
+        comment: "first user for test sudo role"
+        create_home: true
+        shell: /bin/bash
 
-    # - name: create group test
-    #   ansible.builtin.group:
-    #     name: grouptestsudo
-    #     state: present
-
-    # - name: create second test users
-    #   ansible.builtin.user:
-    #     state: present
-    #     name: secondusersudo
-    #     password: second
-    #     comment: "second user for test sudo role"
-    #     create_home: true
-    #     shell: /bin/bash
+    - name: create second test users
+      ansible.builtin.user:
+        state: present
+        name: secondusersudo
+        comment: "second user for test sudo role"
+        create_home: true
+        shell: /bin/bash
 
   vars:
+    sudo_purge_others_sudoers_files: true
+
+    sudo_sudoers_user_aliases: {
+      test: ["secondusersudo", "firstusersudo"]
+    }
+
+    sudo_sudoers_cmnd_aliases : {
+      SHUTDOWN: ["/usr/sbin/reboot","/usr/sbin/poweroff"]
+    }
+
     sudo_rights:
-      secondusersudo:
-        - name: "secondusersudo"
-          no_passwd: false
+      allowrebootsudo:
+        - name: "TEST"
+          no_passwd: true
           from_hosts: ALL
           as_user: ALL
           as_group: ALL
           commands: SHUTDOWN
           state: present
-  
-      firstgroupsudo:
-        - name: "%firstgroupsudo"
-          no_passwd: false
+
+      allowtailsudo:
+        - name: "firstusersudo"
+          no_passwd: true
           from_hosts: ALL
           as_user: ALL
           as_group: ALL
           commands:
             - /usr/bin/tail -f /dev/null
-            - /usr/bin/tail - f /dev/exit
           state: present
-      
-
-
-      
   roles:
     - role: claranet.sudo
