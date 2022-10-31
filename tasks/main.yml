@@ -1,28 +1,31 @@
 ---
-- name: Gather OS specific variables
-  ansible.builtin.include_vars: "{{ loop_vars }}"
-  loop: "{{ query('ansible.builtin.first_found', params) }}"
-  vars:
-    params:
-      files:
-        - "{{ ansible_distro }}-{{ ansible_distro_version }}.yml"
-        - "{{ ansible_distro }}-{{ ansible_distro_release }}.yml"
-        - "{{ ansible_distro }}-{{ ansible_distro_major_version }}.yml"
-        - "{{ ansible_distro }}.yml"
-        - "{{ ansible_os_family | lower }}-family.yml"
+- name: Include distribution tasks
+  ansible.builtin.include_tasks: "{{ loop_distribution }}"
+  with_first_found:
+    - files:
+        - "{{ ansible_distribution | lower }}-{{ ansible_distribution_version }}.yml"
+        - "{{ ansible_distribution | lower }}-{{ ansible_distribution_major_version }}.yml"
+        - "{{ ansible_distribution | lower }}.yml"
+        - "{{ ansible_os_family | lower }}.yml"
         - "{{ ansible_system | lower }}.yml"
-      paths:
-        - "vars"
-      skip: true
   loop_control:
-    loop_var: loop_vars
+    loop_var: loop_distribution
+  tags:
+    - configuration
+    - packages
 
-- name: Debug
-  ansible.builtin.debug:
-    msg: "{{ lookup('ansible.builtin.template', 'sudoers.j2') }}"
-  loop: "{{ sudo_rights | dict2items }}"
+- name: "Check wheter line 'includedir /etc/sudoers.d' is commented and uncommented it"
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    regexp: "#includedir /etc/sudoers.d"
+    line: "@includedir {{ sudo_sudoers_dir }}"
+    owner: root
+    group: root
+    mode: 0640
+    validate: 'visudo -cf %s'
+  become: true
 
-- name: Attempting to overlay sudoers.d configurations, if applicable
+- name: "Attempting to overlay sudoers.d configurations, if applicable"
   ansible.builtin.template:
     src: sudoers.j2
     dest: "{{ sudo_sudoers_dir }}/{{ item.key }}"
@@ -31,3 +34,38 @@
     mode: 0440
     validate: 'visudo -cf %s'
   loop: "{{ sudo_rights | dict2items }}"
+  changed_when: false
+  become: true
+
+- name: "Configure alias"
+  ansible.builtin.template:
+    src: alias.j2
+    dest: "{{ sudo_sudoers_dir }}/alias"
+    owner: root
+    group: root
+    mode: 0440
+    validate: 'visudo -cf %s'
+  changed_when: false
+  become: true
+
+- name: "List files in {{ sudo_sudoers_dir }}"
+  ansible.builtin.find:
+    paths: "{{ sudo_sudoers_dir }}"
+    patterns: "*"
+  register: _sudo_sudoers_dir_contents
+  changed_when: false
+  when: sudo_purge_others_sudoers_files | bool
+  become: true
+
+- name: "Remove unmanaged files in {{ sudo_sudoers_dir }}"
+  ansible.builtin.file:
+    path: "{{ sudo_sudoers_dir }}/{{ item.path | basename }}"
+    state: absent
+  loop: "{{ _sudo_sudoers_dir_contents.files }}"
+  loop_control:
+    label: "{{ item.path }}"
+  when:
+    - sudo_purge_others_sudoers_files | bool
+    - (item.path|basename) not in sudo_rights and (item.path|basename != "alias")
+  changed_when: false
+  become: true
