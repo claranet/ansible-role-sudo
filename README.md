@@ -25,7 +25,15 @@ ansible-galaxy install claranet.sudo
 
 Variable | Default value | Description
 ---------|---------------|------------
-null     | **null**      | null       
+sudo_sudoers_dir | /etc/sudoers.d | directory which contains sudo rigths files
+sudo_install_package | true | install sudo package before set rigths
+sudo_rigths    | **null**      | contains all sudo rigths to set
+sudo_purge_others_sudoers_files | false | purge others file which aren't in our sudo rights configuration
+sudo_sudoers_cmnd_aliases | {} | set command alias: name of command alias as key and list of commands as value
+sudo_sudoers_user_aliases | {} | set user alias: name of user alias as key and list of users as value
+sudo_sudoers_host_aliases | {} | set host alias: name of host alias as key and list of host as values
+sudo_sudoers_runas_aliases | {} | set sudoers run as
+
 
 ## :arrows_counterclockwise: Dependencies
 
@@ -36,8 +44,38 @@ N/A
 ```yaml
 ---
 - hosts: all
-  roles:
-    - claranet.sudo
+  vars:
+      sudo_purge_others_sudoers_files: true
+
+      sudo_sudoers_user_aliases: {
+        test: ["secondusersudo", "firstusersudo"]
+      }
+
+      sudo_sudoers_cmnd_aliases : {
+        SHUTDOWN: ["/usr/sbin/reboot","/usr/sbin/poweroff"]
+      }
+
+      sudo_rights:
+        allowrebootsudo:
+          - name: "TEST"
+            no_passwd: true
+            from_hosts: ALL
+            as_user: ALL
+            as_group: ALL
+            commands: SHUTDOWN
+            state: present
+
+        allowtailsudo:
+          - name: "firstusersudo"
+            no_passwd: true
+            from_hosts: ALL
+            as_user: ALL
+            as_group: ALL
+            commands:
+              - /usr/bin/tail -f /dev/null
+            state: present
+    roles:
+      - role: claranet.sudo
 ```
 
 ## :closed_lock_with_key: [Hardening](HARDENING.md)
