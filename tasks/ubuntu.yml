@@ -1,0 +1,8 @@
+# tasks file for DEBIAN
+- name: Installing required packages
+  ansible.builtin.apt:
+    name: "sudo"
+    update_cache: true
+    force_apt_get: true
+    state: present
+  when: sudo_install_package
