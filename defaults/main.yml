@@ -2,10 +2,10 @@
 # defaults file for role
 
 # dirs for sudoers configuration files
-sudo_sudoers_dir: /etc/sudoers.d
+sudo_config_directory: /etc/sudoers.d
 
 # install sudo package
-sudo_install_package: true
+sudo_allow_install_package: true
 
 # sudo rights to set
 sudo_rights:
@@ -20,16 +20,16 @@ sudo_rights:
       state: present
 
 # purge others sudoers files which aren't in our sudo rights configuration
-sudo_purge_others_sudoers_files: false
+sudo_purge_others_config: false
 
 # set alias for specify a list of commands and directories
-sudo_sudoers_cmnd_aliases: {}
+sudo_command_aliases: {}
 
 # set alias for specify a list of users
-sudo_sudoers_user_aliases: {}
+sudo_user_aliases: {}
 
 # set alias for specify a list of hosts
-sudo_sudoers_host_aliases: {}
+sudo_host_aliases: {}
 
 # set alias for specify a list of users by UID
-sudo_sudoers_runas_aliases: {}
+sudo_runas_aliases: {}
