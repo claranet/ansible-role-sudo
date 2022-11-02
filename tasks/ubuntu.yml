@@ -5,4 +5,4 @@
     update_cache: true
     force_apt_get: true
     state: present
-  when: sudo_install_package
+  when: sudo_allow_install_package

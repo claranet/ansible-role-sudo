@@ -5,4 +5,4 @@
     name: "sudo"
     update_cache: true
     state: present
-  when: sudo_install_package
+  when: sudo_allow_install_package

@@ -18,7 +18,7 @@
   ansible.builtin.lineinfile:
     path: /etc/sudoers
     regexp: "#includedir /etc/sudoers.d"
-    line: "@includedir {{ sudo_sudoers_dir }}"
+    line: "@includedir {{ sudo_config_directory }}"
     owner: root
     group: root
     mode: 0640
@@ -28,7 +28,7 @@
 - name: "Attempting to overlay sudoers.d configurations, if applicable"
   ansible.builtin.template:
     src: sudoers.j2
-    dest: "{{ sudo_sudoers_dir }}/{{ item.key }}"
+    dest: "{{ sudo_config_directory }}/{{ item.key }}"
     owner: root
     group: root
     mode: 0440
@@ -40,7 +40,7 @@
 - name: "Configure alias"
   ansible.builtin.template:
     src: alias.j2
-    dest: "{{ sudo_sudoers_dir }}/alias"
+    dest: "{{ sudo_config_directory }}/alias"
     owner: root
     group: root
     mode: 0440
@@ -48,24 +48,24 @@
   changed_when: false
   become: true
 
-- name: "List files in {{ sudo_sudoers_dir }}"
+- name: "List files in {{ sudo_config_directory }}"
   ansible.builtin.find:
-    paths: "{{ sudo_sudoers_dir }}"
+    paths: "{{ sudo_config_directory }}"
     patterns: "*"
-  register: _sudo_sudoers_dir_contents
+  register: _sudo_config_directory_contents
   changed_when: false
-  when: sudo_purge_others_sudoers_files | bool
+  when: sudo_purge_others_config | bool
   become: true
 
-- name: "Remove unmanaged files in {{ sudo_sudoers_dir }}"
+- name: "Remove unmanaged files in {{ sudo_config_directory }}"
   ansible.builtin.file:
-    path: "{{ sudo_sudoers_dir }}/{{ item.path | basename }}"
+    path: "{{ sudo_config_directory }}/{{ item.path | basename }}"
     state: absent
-  loop: "{{ _sudo_sudoers_dir_contents.files }}"
+  loop: "{{ _sudo_config_directory_contents.files }}"
   loop_control:
     label: "{{ item.path }}"
   when:
-    - sudo_purge_others_sudoers_files | bool
+    - sudo_purge_others_config | bool
     - (item.path|basename) not in sudo_rights and (item.path|basename != "alias")
   changed_when: false
   become: true
