@@ -7,3 +7,4 @@
     force_apt_get: true
     state: present
   when: sudo_allow_install_package
+  become: true

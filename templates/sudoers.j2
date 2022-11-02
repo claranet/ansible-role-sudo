@@ -1,23 +1,23 @@
 ## {{ ansible_managed }}
 
-{% for line in item.value %}
+{%+ for line in item.value -%}
 
-{% set _sudo_run_from_hosts = line.from_hosts | default('ALL') %}
-{% set _sudo_run_as_user = line.as_user | default('ALL') %}
-{% set _sudo_run_as_group = line.as_group | default('ALL') %}
-{% set _sudo_use_nopasswd = 'NOPASSWD: ' if line.no_passwd | default(false) else ('') %}
-{% set _sudo_run_commands = line.commands | default('ALL') %}
-{% set _sudo_state_rights = line.state | default('present') %}
+{%- set _sudo_run_from_hosts = line.from_hosts | default('ALL') -%}
+{%- set _sudo_run_as_user = line.as_user | default('ALL') -%}
+{%- set _sudo_run_as_group = line.as_group | default('ALL') -%}
+{%-set _sudo_use_nopasswd = 'NOPASSWD: ' if line.no_passwd | default(false) else ('') -%}
+{%- set _sudo_run_commands = line.commands | default('ALL') -%}
+{%- set _sudo_state_rights = line.state | default('present') -%}
 
 {# extract command when we have one command set as a list #}
-{%- if  _sudo_run_commands is iterable and _sudo_run_commands is not string %}
+{%- if  _sudo_run_commands is iterable and _sudo_run_commands is not string -%}
     {%- if _sudo_run_commands|length > 1 %}
-        {% set _sudo_run_commands = _sudo_run_commands | join(',') %}
+        {%- set _sudo_run_commands = _sudo_run_commands | join(',') -%}
     {%- else %}
-        {% set _sudo_run_commands = _sudo_run_commands[0] %}
+        {%- set _sudo_run_commands = _sudo_run_commands[0] -%}
     {%- endif %}
 {%- endif +%}
-{%- if _sudo_state_rights == "present" %}
+{%- if _sudo_state_rights == "present" -%}
     {{ line.name }} {{ _sudo_run_from_hosts }}=({{ _sudo_run_as_user }}:{{ _sudo_run_as_group }}) {{ _sudo_use_nopasswd }}{{ _sudo_run_commands }}
 {%- endif -%}
-{% endfor %}
+{%- endfor -%}
