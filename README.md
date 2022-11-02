@@ -25,15 +25,23 @@ ansible-galaxy install claranet.sudo
 
 Variable | Default value | Description
 ---------|---------------|------------
-sudo_sudoers_dir | /etc/sudoers.d | directory which contains sudo rigths files
-sudo_install_package | true | install sudo package before set rigths
-sudo_rigths    | **null**      | contains all sudo rigths to set
-sudo_purge_others_sudoers_files | false | purge others file which aren't in our sudo rights configuration
-sudo_sudoers_cmnd_aliases | {} | set command alias: name of command alias as key and list of commands as value
-sudo_sudoers_user_aliases | {} | set user alias: name of user alias as key and list of users as value
-sudo_sudoers_host_aliases | {} | set host alias: name of host alias as key and list of host as values
-sudo_sudoers_runas_aliases | {} | set sudoers run as
+sudo_config_directory | /etc/sudoers.d | directory which contains sudo rigths files
+sudo_allow_install_package | true | install sudo package before set rigths
+sudo_rights    | {} | - contains all sudo rigths to set.
+sudo_purge_others_config | false | purge others file which aren't in our sudo rights configuration
+sudo_command_aliases | {} | set command alias: name of command alias as key and list of commands as value
+sudo_user_aliases | {} | set user alias: name of user alias as key and list of users as value
+sudo_host_aliases  | {} | set host alias: name of host alias as key and list of host as values
+sudo_runas_aliases | {} | set sudoers run as
 
+## :gear: Attributes of variable sudo_rights
+- **name**: String which represent the name of user or group to give the rights. For group, use **%name_of_group**
+- **no_passwd**: Boolean attribut for set if we want to use command(s) with or without password
+- **from_hosts**: String which specify hosts where we can make these actions 
+- **as_user**: User to substitute for execute commands
+- **as_group**: Group to substitute for execute commands
+- **commands**: List of commands which can be execute by sudoers
+- **state**: can be present or absent for add or delete rigths.
 
 ## :arrows_counterclockwise: Dependencies
 
@@ -45,27 +53,27 @@ N/A
 ---
 - hosts: all
   vars:
-      sudo_purge_others_sudoers_files: true
+      sudo_purge_others_config: true
 
-      sudo_sudoers_user_aliases: {
+      sudo_user_aliases: {
         test: ["secondusersudo", "firstusersudo"]
       }
 
-      sudo_sudoers_cmnd_aliases : {
+      sudo_command_aliases : {
         SHUTDOWN: ["/usr/sbin/reboot","/usr/sbin/poweroff"]
       }
 
       sudo_rights:
-        allowrebootsudo:
-          - name: "TEST"
-            no_passwd: true
-            from_hosts: ALL
-            as_user: ALL
-            as_group: ALL
-            commands: SHUTDOWN
-            state: present
+        allowrebootsudo:                          # required
+          - name: "TEST"                          # required
+            no_passwd: true                       # default is false
+            from_hosts: ALL                       # can be ommit, default is ALL
+            as_user: ALL                          # can be ommit, default is ALL
+            as_group: ALL                         # can be ommit, default is ALL
+            commands: SHUTDOWN                    # required
+            state: present                        # can be ommit, default is present
 
-        allowtailsudo:
+        allowtailsudo:                            # second user's rights
           - name: "firstusersudo"
             no_passwd: true
             from_hosts: ALL
@@ -77,6 +85,8 @@ N/A
     roles:
       - role: claranet.sudo
 ```
+
+
 
 ## :closed_lock_with_key: [Hardening](HARDENING.md)
 
