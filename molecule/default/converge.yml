@@ -47,7 +47,7 @@
           as_user: ALL
           as_group: ALL
           commands:
-            - /usr/bin/tail -f /dev/null
+            - /usr/bin/tail /dev/null
           state: present
   roles:
     - role: claranet.sudo

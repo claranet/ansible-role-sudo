@@ -12,3 +12,8 @@ def test_sudoers_file_properties(host):
 
 def test_if_sudoers_d_is_not_empty_and_contains(host):
     assert host.file("/etc/sudoers.d").listdir() != []
+
+
+def test_sudo_commands_is_working(host):
+    _sudo_cmd = host.run("su - firstusersudo -c 'tail /dev/null'")
+    assert _sudo_cmd.rc <= 0
