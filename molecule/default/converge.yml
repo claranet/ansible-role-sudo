@@ -22,14 +22,12 @@
   vars:
     sudo_purge_others_config: true
 
-    sudo_user_aliases: {
+    sudo_user_aliases: 
       test: ["secondusersudo", "firstusersudo"]
-    }
 
-    sudo_command_aliases: {
+    sudo_command_aliases:
       SHUTDOWN: ["/usr/sbin/reboot", "/usr/sbin/poweroff"]
-    }
-
+    
     sudo_rights:
       allowrebootsudo:
         - name: "TEST"
