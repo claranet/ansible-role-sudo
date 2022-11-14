@@ -14,17 +14,6 @@
     - configuration
     - packages
 
-- name: "Check wheter line 'includedir /etc/sudoers.d' is commented and uncommented it"
-  ansible.builtin.lineinfile:
-    path: /etc/sudoers
-    regexp: "#includedir /etc/sudoers.d"
-    line: "@includedir {{ sudo_config_directory }}"
-    owner: root
-    group: root
-    mode: 0640
-    validate: 'visudo -cf %s'
-  become: true
-
 - name: "Attempting to overlay sudoers.d configurations, if applicable"
   ansible.builtin.template:
     src: sudoers.j2
