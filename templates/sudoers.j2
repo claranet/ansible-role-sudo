@@ -5,7 +5,7 @@
 {%- set _sudo_run_from_hosts = line.from_hosts | default('ALL') -%}
 {%- set _sudo_run_as_user = line.as_user | default('ALL') -%}
 {%- set _sudo_run_as_group = line.as_group | default('ALL') -%}
-{%-set _sudo_use_nopasswd = 'NOPASSWD: ' if line.no_passwd | default(false) else ('') -%}
+{%- set _sudo_use_nopasswd = 'NOPASSWD: ' if line.no_passwd | default(false) else ('') -%}
 {%- set _sudo_run_commands = line.commands | default('ALL') -%}
 {%- set _sudo_state_rights = line.state | default('present') -%}
 
