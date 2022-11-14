@@ -62,7 +62,6 @@ N/A
       sudo_command_aliases:
         SHUTDOWN: ["/usr/sbin/reboot","/usr/sbin/poweroff"]
       
-
       sudo_rights:
         allowrebootsudo:                          # required
           - name: "TEST"                          # required

@@ -1,9 +1,11 @@
 ---
 - name: Converge
   hosts: all
+  gather_facts: true
 
   pre_tasks:
-    - name: create test users
+
+    - name: Create test users
       ansible.builtin.user:
         state: present
         name: firstusersudo
@@ -11,7 +13,7 @@
         create_home: true
         shell: /bin/bash
 
-    - name: create second test users
+    - name: Create second test users
       ansible.builtin.user:
         state: present
         name: secondusersudo
@@ -38,14 +40,5 @@
           commands: SHUTDOWN
           state: present
 
-      allowtailsudo:
-        - name: "firstusersudo"
-          no_passwd: true
-          from_hosts: ALL
-          as_user: ALL
-          as_group: ALL
-          commands:
-            - /usr/bin/tail /dev/null
-          state: present
   roles:
     - role: claranet.sudo
