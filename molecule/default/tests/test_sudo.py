@@ -5,7 +5,7 @@ def test_if_sudo_package_is_installed(host):
 
 def test_sudoers_file_properties(host):
     _sudo_file_config = host.file("/etc/sudoers")
-    assert _sudo_file_config.mode == 0o640
+    assert _sudo_file_config.mode == 0o440
     assert _sudo_file_config.user == 'root'
     assert _sudo_file_config.group == 'root'
     assert host.run('visudo -c').rc <= 0
