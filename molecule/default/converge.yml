@@ -1,5 +1,55 @@
 ---
 - name: Converge
   hosts: all
+  gather_facts: true
+
+  pre_tasks:
+
+    - name: Create test users
+      ansible.builtin.user:
+        state: present
+        name: firstusersudo
+        comment: "first user for test sudo role"
+        create_home: true
+        shell: /bin/bash
+      become: true
+
+    - name: Create second test users
+      ansible.builtin.user:
+        state: present
+        name: secondusersudo
+        comment: "second user for test sudo role"
+        create_home: true
+        shell: /bin/bash
+      become: true
+
+  vars:
+    sudo_purge_others_config: true
+
+    sudo_user_aliases:
+      test: ["secondusersudo", "firstusersudo"]
+
+    sudo_command_aliases:
+      SHUTDOWN: ["/usr/sbin/reboot", "/usr/sbin/poweroff"]
+
+    sudo_rights:
+      allowrebootsudo:
+        - name: "TEST"
+          no_passwd: true
+          from_hosts: ALL
+          as_user: ALL
+          as_group: ALL
+          commands: SHUTDOWN
+          state: present
+      allowtailsudo:
+        - name: "firstusersudo"
+          no_passwd: true
+          from_hosts: ALL
+          as_user: ALL
+          as_group: ALL
+          commands:
+            - /usr/bin/tail /dev/null
+          state: present
+
   roles:
     - role: claranet.sudo

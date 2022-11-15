@@ -1,31 +1,66 @@
 ---
-- name: Gather OS specific variables
-  ansible.builtin.include_vars: "{{ loop_vars }}"
-  loop: "{{ query('ansible.builtin.first_found', params) }}"
-  vars:
-    params:
-      files:
-        - "{{ ansible_distro }}-{{ ansible_distro_version }}.yml"
-        - "{{ ansible_distro }}-{{ ansible_distro_release }}.yml"
-        - "{{ ansible_distro }}-{{ ansible_distro_major_version }}.yml"
-        - "{{ ansible_distro }}.yml"
-        - "{{ ansible_os_family | lower }}-family.yml"
-        - "{{ ansible_system | lower }}.yml"
-      paths:
-        - "vars"
-      skip: true
-  loop_control:
-    loop_var: loop_vars
 
-- name: Make a sudo file
-  vars:
-    sudoers_merged: "{{ sudoers | default([]) + sudoers_all | default([]) }}"
+- name: Installing required packages
+  ansible.builtin.package:
+    name: "sudo"
+    state: present
+  when: sudo_allow_install_package
+  become: true
+
+- name: "Enable sudoers.d"
+  ansible.builtin.lineinfile:
+    backup: true
+    create: true
+    dest: '/etc/sudoers'
+    line: "#includedir {{ sudo_config_directory }}"
+    regexp: '^[@#]includedir .*'
+    validate: visudo -cf %s
+    mode: 0440
+    owner: root
+    group: root
+  become: true
+
+- name: "Configure alias"
   ansible.builtin.template:
-    src: 'sudoers.j2'
-    dest: "{{ sudoers_dir }}/{{ '20_' + item.user + '_' + item.name }}"
+    src: alias.j2
+    dest: "{{ sudo_config_directory }}/alias"
     owner: root
     group: root
     mode: 0440
-    validate: "visudo -cf %s"  # {{ sudoers_dir }}/{{ '20' + item.user + '_' + item.name }}"
-  loop: "{{ sudoers_merged }}"
-  when: (sudoers is defined) or (sudoers_all is defined)
+    validate: 'visudo -cf %s'
+  changed_when: false
+  become: true
+
+- name: "Attempting to overlay sudoers.d configurations, if applicable"
+  ansible.builtin.template:
+    src: sudoers.j2
+    dest: "{{ sudo_config_directory }}/{{ item.key }}"
+    owner: root
+    group: root
+    mode: 0440
+  loop: "{{ sudo_rights | dict2items }}"
+  changed_when: false
+  become: true
+
+
+- name: "List files in {{ sudo_config_directory }}"
+  ansible.builtin.find:
+    paths: "{{ sudo_config_directory }}"
+    patterns: "*"
+  register: _sudo_config_directory_contents
+  changed_when: false
+  when: sudo_purge_others_config | bool
+  become: true
+
+- name: "Remove unmanaged files in {{ sudo_config_directory }}"
+  ansible.builtin.file:
+    path: "{{ sudo_config_directory }}/{{ item.path | basename }}"
+    state: absent
+  loop: "{{ _sudo_config_directory_contents.files }}"
+  loop_control:
+    label: "{{ item.path }}"
+  when:
+    - sudo_purge_others_config | bool
+    - (item.path|basename) not in sudo_rights and (item.path|basename != "alias")
+  changed_when: false
+  become: true

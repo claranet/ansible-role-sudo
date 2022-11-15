@@ -1,0 +1,29 @@
+## {{ ansible_managed }}
+
+{% if sudo_command_aliases|length > 0 %}
+## Cmnd alias specification
+{% for name, list in sudo_command_aliases.items()|sort %}
+Cmnd_Alias {{ name|upper }} = {{ list|join(', ') }}
+{% endfor %}
+{% endif %}
+
+{%- if sudo_host_aliases |length > 0 %}
+## Host alias specification
+{% for name, list in sudo_host_aliases .items()|sort %}
+Host_Alias	{{ name|upper }} = {{ list|join(', ') }}
+{% endfor %}
+{%- endif -%}
+
+{%- if sudo_runas_aliases|length > 0 %}
+## Runas alias specification
+{% for name, list in sudo_runas_aliases.items()|sort %}
+Runas_Alias	{{ name|upper }} = {{ list|join(', ') }}
+{% endfor %}
+{%- endif -%}
+
+{%- if sudo_user_aliases|length > 0 %}
+## User alias specification
+{% for name, list in sudo_user_aliases.items()|sort %}
+User_Alias	{{ name|upper }} = {{ list|join(', ') }}
+{% endfor %}
+{%- endif +%}
