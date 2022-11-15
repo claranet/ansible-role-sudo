@@ -4,24 +4,16 @@
   gather_facts: true
 
   pre_tasks:
-
-    - name: Create test users
-      ansible.builtin.user:
+    - name: Create users 
+      ansible.builtin.user: 
         state: present
-        name: firstusersudo
-        comment: "first user for test sudo role"
+        name: "{{ item.name }}" 
+        comment: "{{ item.comment }}" 
         create_home: true
-        shell: /bin/bash
-      become: true
-
-    - name: Create second test users
-      ansible.builtin.user:
-        state: present
-        name: secondusersudo
-        comment: "second user for test sudo role"
-        create_home: true
-        shell: /bin/bash
-      become: true
+        shell: "/bin/bash" 
+      loop: 
+        - { name: "firstusersudo", comment: "first user for test sudo role" } 
+        - { name: "secondusersudo", comment: "second user for test sudo role" }
 
   vars:
     sudo_purge_others_config: true
