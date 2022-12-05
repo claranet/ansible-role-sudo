@@ -12,8 +12,10 @@
         create_home: true
         shell: "/bin/bash"
       loop:
-        - { name: "firstusersudo", comment: "first user for test sudo role" }
-        - { name: "secondusersudo", comment: "second user for test sudo role" }
+        - name: "firstusersudo"
+          comment: "first user for test sudo role"
+        - name: "secondusersudo"
+          comment: "second user for test sudo role"
 
   vars:
     sudo_purge_others_config: true
