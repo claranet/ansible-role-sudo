@@ -5,7 +5,6 @@
     name: "sudo"
     state: present
   when: sudo_allow_install_package
-  become: true
 
 - name: "Enable sudoers.d"
   ansible.builtin.lineinfile:
@@ -18,7 +17,6 @@
     mode: 0440
     owner: root
     group: root
-  become: true
 
 - name: "Configure alias"
   ansible.builtin.template:
@@ -29,7 +27,6 @@
     mode: 0440
     validate: 'visudo -cf %s'
   changed_when: false
-  become: true
 
 - name: "Attempting to overlay sudoers.d configurations, if applicable"
   ansible.builtin.template:
@@ -40,7 +37,6 @@
     mode: 0440
   loop: "{{ sudo_rights | dict2items }}"
   changed_when: false
-  become: true
 
 
 - name: "List files in {{ sudo_config_directory }}"
@@ -50,7 +46,6 @@
   register: _sudo_config_directory_contents
   changed_when: false
   when: sudo_purge_others_config | bool
-  become: true
 
 - name: "Remove unmanaged files in {{ sudo_config_directory }}"
   ansible.builtin.file:
@@ -63,4 +58,3 @@
     - sudo_purge_others_config | bool
     - (item.path|basename) not in sudo_rights and (item.path|basename != "alias")
   changed_when: false
-  become: true

@@ -23,16 +23,16 @@ ansible-galaxy install claranet.sudo
 
 ## :gear: Role variables
 
-Variable                  | Default value                     | Description
---------------------------|-----------------------------------|---------------------------------------------------------
-sudo_config_directory     | /etc/sudoers.d                    | directory which contains sudo rigths files
-sudo_allow_install_package | true                             | install sudo package before set rigths
-sudo_rights               | {}                                | - contains all sudo rigths to set.
-sudo_purge_others_config  | false                             | purge others file which aren't in our sudo rights configuration
-sudo_command_aliases      | {}                                | set command alias: name of command alias as key and list of commands as value
-sudo_user_aliases         | {}                                | set user alias: name of user alias as key and list of users as value
-sudo_host_aliases         | {}                                | set host alias: name of host alias as key and list of host as values
-sudo_runas_aliases        | {}                                | set sudoers run as
+Variable                          | Default value                     | Description
+----------------------------------|-----------------------------------|---------------------------------------------------------
+sudo_config_directory             | /etc/sudoers.d                    | directory which contains sudo rigths files
+sudo_allow_install_package        | true                              | install sudo package before set rigths
+sudo_rights                       | {}                                | contains all sudo rigths to set: :point_right: [attributes description of variable sudo_rights](#gear-attributes-of-variable-sudo_rights)
+sudo_purge_others_config          | false                             | purge others file which aren't in our sudo rights configuration
+sudo_command_aliases              | {}                                | set command alias: name of command alias as key and list of commands as value
+sudo_user_aliases                 | {}                                | set user alias: name of user alias as key and list of users as value
+sudo_host_aliases                 | {}                                | set host alias: name of host alias as key and list of host as values
+sudo_runas_aliases                | {}                                | set sudoers run as
 
 
 ## :gear: Attributes of variable sudo_rights
@@ -83,6 +83,8 @@ N/A
             state: present
     roles:
       - role: claranet.sudo
+        become: true
+
 ```
 
 

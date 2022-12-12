@@ -4,16 +4,18 @@
   gather_facts: true
 
   pre_tasks:
-    - name: Create users 
-      ansible.builtin.user: 
+    - name: Create users
+      ansible.builtin.user:
         state: present
-        name: "{{ item.name }}" 
-        comment: "{{ item.comment }}" 
+        name: "{{ item.name }}"
+        comment: "{{ item.comment }}"
         create_home: true
-        shell: "/bin/bash" 
-      loop: 
-        - { name: "firstusersudo", comment: "first user for test sudo role" } 
-        - { name: "secondusersudo", comment: "second user for test sudo role" }
+        shell: "/bin/bash"
+      loop:
+        - name: "firstusersudo"
+          comment: "first user for test sudo role"
+        - name: "secondusersudo"
+          comment: "second user for test sudo role"
 
   vars:
     sudo_purge_others_config: true
@@ -45,3 +47,4 @@
 
   roles:
     - role: claranet.sudo
+      become: true
