@@ -8,16 +8,7 @@ sudo_config_directory: /etc/sudoers.d
 sudo_allow_install_package: true
 
 # sudo rights to set
-sudo_rights:
-  foo:
-    - name: "foo"
-      no_passwd: false
-      from_hosts: ALL
-      as_user: ALL
-      as_group: ALL
-      commands:
-        - "tail -f /dev/null"
-      state: present
+sudo_rights: {}
 
 # purge others sudoers files which aren't in our sudo rights configuration
 sudo_purge_others_config: false
