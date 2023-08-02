@@ -61,9 +61,9 @@ jobs:
             image: "registry.access.redhat.com/ubi8/ubi"
             tag: "latest"
           - image: "debian"
-            tag: "11"
+            tag: "12"
           - image: "debian"
-            tag: "10"
+            tag: "11"
           - image: "ubuntu"
             tag: "22.04"
 
