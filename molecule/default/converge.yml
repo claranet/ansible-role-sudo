@@ -25,9 +25,10 @@
 
     sudo_command_aliases:
       SHUTDOWN: ["/usr/sbin/reboot", "/usr/sbin/poweroff"]
+      FILTER: ["/usr/sbin/grep", "/usr/sbin/fgrep", "/usr/sbin/egrep"]
 
     sudo_rights:
-      allowrebootsudo:
+      allowrebootandfilter:
         - name: "TEST"
           no_passwd: true
           from_hosts: ALL
@@ -35,7 +36,14 @@
           as_group: ALL
           commands: SHUTDOWN
           state: present
-      allowtailsudo:
+        - name: "secondusersudo"
+          no_passwd: true
+          from_hosts: ALL
+          as_user: ALL
+          as_group: ALL
+          commands: FILTER
+          state: present
+      allowfirstusertail:
         - name: "firstusersudo"
           no_passwd: true
           from_hosts: ALL
