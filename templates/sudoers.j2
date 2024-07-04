@@ -1,3 +1,4 @@
+# jinja2: lstrip_blocks: True
 ## {{ ansible_managed }}
 
 {%+ for line in item.value -%}
@@ -19,5 +20,5 @@
 {%- endif +%}
 {%- if _sudo_state_rights == "present" -%}
     {{ line.name }} {{ _sudo_run_from_hosts }}=({{ _sudo_run_as_user }}:{{ _sudo_run_as_group }}) {{ _sudo_use_nopasswd }}{{ _sudo_run_commands }}
-{%- endif -%}
+{% endif -%}
 {%- endfor -%}
